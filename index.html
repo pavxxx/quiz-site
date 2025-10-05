@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Deadlock OS Quiz - Interactive Learning</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .quiz-container {
+            background: #fff;
+            width: 90vw;
+            max-width: 440px;
+            margin: 30px 0;
+            border-radius: 12px;
+            box-shadow: 0 6px 38px #0002;
+            padding: 32px 28px 24px 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h2 {
+            color: #2477fd;
+            margin-bottom: 18px;
+            letter-spacing: 1px;
+            font-weight: 600;
+            text-align: center;
+        }
+        .question {
+            font-weight: 500;
+            font-size: 1.13rem;
+            color: #173977;
+            background: #f8faff;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 18px;
+            text-align: left;
+            width: 100%;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .option-btn {
+            display: block;
+            background: #ecf0fc;
+            color: #16315b;
+            border: 2px solid #daedfc;
+            border-radius: 7px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-align: left;
+            transition: .18s;
+        }
+        .option-btn:hover, .option-selected {
+            background: #66a6ff17;
+            border-color: #66a6ff;
+            color: #2477fd;
+        }
+        .btn {
+            background: linear-gradient(120deg, #2477fd 90%, #89f7fe 100%);
+            color: #fff;
+            border: none;
+            border-radius: 7px;
+            padding: 12px 28px;
+            font-size: 1.05rem;
+            cursor: pointer;
+            margin-bottom: 10px;
+            margin-top: 10px;
+            transition: .2s;
+        }
+        .btn:active {
+            filter: brightness(0.93);
+        }
+        .feedback {
+            min-height: 24px;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            font-weight: 500;
+            text-align: center;
+        }
+        .score {
+            font-size: 1.18rem;
+            color: #126093;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+        .question-count {
+            color: #637ba9;
+            font-size: .99rem;
+            margin-bottom: 3px;
+            text-align: right;
+            width: 100%;
+        }
+        @media (max-width: 600px) {
+            .quiz-container { 
+                padding: 18px 10px;
+                max-width: 98vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container" id="quizApp">
+        <h2>Deadlock OS Quiz</h2>
+        <div id="quizSection">
+            <!-- Quiz will render here -->
+        </div>
+    </div>
+    <script>
+        // Multiple sets of quiz questions to vary for each quiz session
+        const quizSets = [
+            [
+                {
+                    question: "Which of these is NOT a necessary condition for deadlock?",
+                    options: ["Mutual Exclusion", "Hold and Wait", "Preemption", "Circular Wait"],
+                    answer: 2
+                },
+                {
+                    question: "What does the deadlock system model primarily consist of?",
+                    options: ["Processes & Memory", "Processes & Resources", "Threads & CPUs", "Users & Files"],
+                    answer: 1
+                },
+                {
+                    question: "Which deadlock handling method ignores the problem?",
+                    options: ["Deadlock Prevention", "Deadlock Avoidance", "Detection & Recovery", "Ostrich Algorithm"],
+                    answer: 3
+                },
+                {
+                    question: "Banker's Algorithm falls under which method?",
+                    options: ["Prevention", "Avoidance", "Detection", "Recovery"],
+                    answer: 1
+                },
+                {
+                    question: "A closed chain of processes each waiting for a resource held by the next is called?",
+                    options: ["Resource Allocation Graph", "Circular Wait", "Hold and Wait", "Preemption"],
+                    answer: 1
+                }
+            ],
+            [
+                {
+                    question: "Which deadlock condition means a process holds at least one resource and waits for others?",
+                    options: ["Hold and Wait", "Preemption", "Circular Wait", "Mutual Exclusion"],
+                    answer: 0
+                },
+                {
+                    question: "What is the first step to detect a deadlock in a resource allocation graph?",
+                    options: ["Check for cycles", "Count processes", "Remove free resources", "Apply Banker's Algorithm"],
+                    answer: 0
+                },
+                {
+                    question: "Deadlock prevention tries to eliminate which one?",
+                    options: ["Necessity for processes", "Circular Wait", "Resource Release", "Resource Request"],
+                    answer: 1
+                },
+                {
+                    question: "Which is not a common deadlock handling method?",
+                    options: ["Detection", "Prevention", "Suppression", "Avoidance"],
+                    answer: 2
+                },
+                {
+                    question: "The process of recovering from deadlock often involves?",
+                    options: ["Rebooting system", "Terminating processes", "Adding resources", "All of the above"],
+                    answer: 1
+                }
+            ],
+            [
+                {
+                    question: "The four Coffman conditions for deadlock include: Mutual Exclusion, Hold and Wait, No Preemption, and?",
+                    options: ["Resource Allocation", "Circular Wait", "Starvation", "Concurrency"],
+                    answer: 1
+                },
+                {
+                    question: "In deadlock avoidance, the system must know?",
+                    options: ["CPU speed", "Resource requirements in advance", "Number of active threads", "User names"],
+                    answer: 1
+                },
+                {
+                    question: "When can deadlock still happen despite detection and recovery?",
+                    options: ["Resources are infinite", "Processes do not request", "Improper recovery process", "System is idle"],
+                    answer: 2
+                },
+                {
+                    question: "Which of the following cannot solve deadlock by itself?",
+                    options: ["Preemption", "Starvation", "Detection", "Avoidance"],
+                    answer: 1
+                },
+                {
+                    question: "What is a ‘safe sequence’ in deadlock avoidance?",
+                    options: ["Order to terminate processes", "Schedule where deadlock is impossible", "List of allocated resources", "Name of recovery process"],
+                    answer: 1
+                }
+            ]
+        ];
+        let currSetIdx = Math.floor(Math.random() * quizSets.length);
+        let currQ = 0;
+        let score = 0;
+        let selectedOptionIdx = null;
+        const quizSection = document.getElementById('quizSection');
+
+        function showQuestion() {
+            const currentSet = quizSets[currSetIdx];
+            if (currQ < currentSet.length) {
+                const qObj = currentSet[currQ];
+                let html = `
+                    <div class='question-count'>
+                        Question ${currQ + 1} of ${currentSet.length}
+                    </div>
+                    <div class='question'>${qObj.question}</div>
+                    <div class='options'>
+                        ${qObj.options.map((opt, idx) =>
+                            `<button class="option-btn" id="opt${idx}" onclick="selectOption(${idx})">${opt}</button>`
+                        ).join("")}
+                    </div>
+                    <button class="btn" onclick="submitAnswer()">Submit</button>
+                    <div class="feedback" id="feedback"></div>
+                `;
+                quizSection.innerHTML = html;
+                selectedOptionIdx = null;
+            } else {
+                showScore();
+            }
+        }
+        window.selectOption = function(idx) {
+            const btns = document.querySelectorAll('.option-btn');
+            btns.forEach(b => b.classList.remove('option-selected'));
+            document.getElementById('opt' + idx).classList.add('option-selected');
+            selectedOptionIdx = idx;
+        };
+        window.submitAnswer = function() {
+            const feedback = document.getElementById('feedback');
+            if (selectedOptionIdx === null) {
+                feedback.textContent = "Please select an option!";
+                feedback.style.color = "#e43f3f";
+                return;
+            }
+            const currentSet = quizSets[currSetIdx];
+            if (selectedOptionIdx === currentSet[currQ].answer) {
+                score++;
+                feedback.textContent = "Correct!";
+                feedback.style.color = "#27be54";
+            } else {
+                feedback.textContent = `Wrong! Correct: "${currentSet[currQ].options[currentSet[currQ].answer]}"`;
+                feedback.style.color = "#e43f3f";
+            }
+            setTimeout(() => {
+                currQ++;
+                showQuestion();
+            }, 1100);
+        };
+        function showScore() {
+            quizSection.innerHTML = `
+                <div class="score">
+                    Quiz Complete!<br>
+                    Your Score: <b>${score} / ${quizSets[currSetIdx].length}</b>
+                </div>
+                <button class="btn" onclick="restartQuiz()">Take Another Quiz</button>
+            `;
+        }
+        window.restartQuiz = function() {
+            currSetIdx = Math.floor(Math.random() * quizSets.length);
+            currQ = 0;
+            score = 0;
+            selectedOptionIdx = null;
+            showQuestion();
+        };
+
+        // Initial quiz display
+        showQuestion();
+    </script>
+</body>
+</html>
